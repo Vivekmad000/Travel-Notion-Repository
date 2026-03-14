@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  username  String?  @unique
+  bio       String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travelPlans   TravelPlan[]
+  visitedCities VisitedCity[]
+  shareLinks    ShareLink[]
+  sharedAccesses SharedAccess[]
+}
+
+model TravelPlan {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  cities      String?
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pages Page[]
+
+  @@index([userId])
+}
+
+model VisitedCity {
+  id       String @id @default(cuid())
+  cityName String
+  country  String
+  lat      Float
+  lng      Float
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ShareLink {
+  id           String   @id @default(cuid())
+  token        String   @unique @default(cuid())
+  resourceType String   // "plan" | "page"
+  resourceId   String
+  permission   String   // "view" | "edit"
+  createdAt    DateTime @default(now())
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  accesses SharedAccess[]
+
+  @@index([token])
+  @@index([createdByUserId])
+}
+
+model SharedAccess {
+  id          String   @id @default(cuid())
+  accessedAt  DateTime @default(now())
+  revoked     Boolean  @default(false)
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  shareLinkId String
+  shareLink   ShareLink @relation(fields: [shareLinkId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([userId, shareLinkId])
+  @@index([userId])
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?  @db.NVarChar(Max)
+  depth     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travelPlanId String
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  parentPageId String?
+  parentPage   Page?   @relation("PageChildren", fields: [parentPageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children     Page[]  @relation("PageChildren")
+
+  @@index([travelPlanId])
+  @@index([parentPageId])
+}
+
