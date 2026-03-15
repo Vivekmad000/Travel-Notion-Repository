@@ -279,7 +279,7 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
         width:12px;height:12px;
         background:radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b);
         border-radius:50%;
-        box-shadow:0 1px 3px rgba(0,0,0,0.5),inset 0 1px 2px rgba(255,255,255,0.3);
+        box-shadow:0 1px 3px rgba(0,0,0,0.5),inset 0 1px 2px rgba(240,236,224,0.3);
         border:1px solid #a93226;
       "></div>`,
       iconSize: [12, 12],
@@ -330,17 +330,17 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
   }, [visitedCities]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--tv-navy)", boxShadow: "0 1px 6px rgba(53,82,172,0.2)" }}>
       <div className="px-6 pt-6 pb-3">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">
-          🗺️ Places I&apos;ve Been
+        <h2 className="text-2xl mb-3" style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-cream)" }}>
+          My World Map
         </h2>
 
         {/* Search with dropdown */}
         <div ref={searchContainerRef} className="relative">
-          <div className="flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500 bg-white">
-            <span className="text-gray-400 text-sm shrink-0">
-              {searching ? "⏳" : "🔍"}
+          <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ border: "1px solid rgba(240,236,224,0.2)", backgroundColor: "rgba(240,236,224,0.1)" }}>
+            <span className="text-sm shrink-0" style={{ color: "rgba(240,236,224,0.7)" }}>
+              {searching ? "⏳" : <img src="/assets/eyeglass.png" alt="Search" width={18} height={18} style={{ display: "inline", filter: "brightness(0) invert(1)" }} />}
             </span>
             <input
               type="text"
@@ -348,12 +348,14 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
               onChange={(e) => handleSearchInput(e.target.value)}
               onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
               placeholder="Search a city… (e.g. Tokyo, Paris, NYC)"
-              className="flex-1 text-sm text-gray-900 placeholder-gray-400 bg-transparent focus:outline-none"
+              className="flex-1 text-sm bg-transparent focus:outline-none placeholder:text-white/40"
+              style={{ color: "var(--tv-cream)", fontFamily: "var(--font-nunito)" }}
             />
             {searchQuery && (
               <button
                 onClick={() => { setSearchQuery(""); setSuggestions([]); setShowDropdown(false); }}
-                className="text-gray-400 hover:text-gray-600 text-lg leading-none"
+                className="text-lg leading-none"
+                style={{ color: "rgba(240,236,224,0.6)" }}
               >
                 ×
               </button>
@@ -362,7 +364,7 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
 
           {/* Suggestions dropdown */}
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-[9999] overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-lg z-[9999] overflow-hidden" style={{ backgroundColor: "var(--tv-blue)", border: "1px solid rgba(240,236,224,0.15)" }}>
               {suggestions.map((s) => {
                 const visited = findVisited(s);
                 const key = `${s.cityName}-${s.country}`;
@@ -370,17 +372,19 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                    className="flex items-center justify-between px-4 py-2.5 last:border-0"
+                    style={{ borderBottom: "1px solid rgba(240,236,224,0.1)" }}
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{s.cityName}</p>
-                      <p className="text-xs text-gray-500 truncate">{s.country}</p>
+                      <p className="text-sm font-medium truncate" style={{ color: "var(--tv-cream)", fontFamily: "var(--font-fredoka)" }}>{s.cityName}</p>
+                      <p className="text-xs truncate" style={{ color: "rgba(240,236,224,0.65)" }}>{s.country}</p>
                     </div>
                     {visited ? (
                       <button
                         onClick={() => handleRemove(visited.id)}
                         disabled={!!loading}
-                        className="ml-3 shrink-0 px-3 py-1 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                        className="ml-3 shrink-0 px-3 py-1 text-xs font-semibold rounded-lg disabled:opacity-50"
+                        style={{ color: "#fca5a5", border: "1px solid #fca5a5", fontFamily: "var(--font-fredoka)" }}
                       >
                         {loading ? "…" : "Remove"}
                       </button>
@@ -388,7 +392,8 @@ export default function TravelMap({ visitedCities, onCityAdded, onCityRemoved }:
                       <button
                         onClick={() => handleAdd(s)}
                         disabled={!!loading}
-                        className="ml-3 shrink-0 px-3 py-1 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-50"
+                        className="ml-3 shrink-0 px-3 py-1 text-xs font-semibold rounded-lg disabled:opacity-50"
+                        style={{ color: "var(--tv-cream)", border: "1px solid rgba(240,236,224,0.3)", fontFamily: "var(--font-fredoka)" }}
                       >
                         {loading ? "…" : "+ Add"}
                       </button>

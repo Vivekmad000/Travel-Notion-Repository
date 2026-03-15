@@ -19,9 +19,9 @@ export function AppHeader() {
         <Link
           href="/dashboard"
           className="text-2xl shrink-0"
-          style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-peach)" }}
+          style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-cream)" }}
         >
-          TravelVerse
+          Planora
         </Link>
 
         {/* Nav tabs */}
@@ -35,13 +35,10 @@ export function AppHeader() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                  isActive
-                    ? "text-white"
-                    : "text-white/60 hover:text-white"
-                }`}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors`}
                 style={{
                   fontFamily: "var(--font-fredoka)",
+                  color: "var(--tv-cream)",
                   ...(isActive ? { backgroundColor: "var(--tv-terracotta)" } : {}),
                 }}
               >

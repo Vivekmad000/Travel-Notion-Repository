@@ -219,7 +219,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
         {/* Empty state */}
         {travelPlans.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed p-16 text-center" style={{ borderColor: "var(--tv-peach)", backgroundColor: "rgba(246,241,230,0.5)" }}>
-            <div className="text-6xl mb-4">🌍</div>
+            <img src="/assets/world.png" alt="" width={80} height={80} className="mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-navy)" }}>No travel plans yet</h2>
             <p className="mb-6 text-sm" style={{ color: "var(--tv-blue)" }}>Create your first travel plan to get started!</p>
             <button
