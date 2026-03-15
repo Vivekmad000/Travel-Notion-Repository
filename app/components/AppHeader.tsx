@@ -13,10 +13,14 @@ export function AppHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <header className="sticky top-0 z-20" style={{ backgroundColor: "var(--tv-navy)" }}>
       <div className="px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/dashboard" className="text-xl font-bold text-indigo-600 shrink-0">
+        <Link
+          href="/dashboard"
+          className="text-2xl shrink-0"
+          style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-peach)" }}
+        >
           TravelVerse
         </Link>
 
@@ -31,11 +35,15 @@ export function AppHeader() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
                   isActive
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    ? "text-white"
+                    : "text-white/60 hover:text-white"
                 }`}
+                style={{
+                  fontFamily: "var(--font-fredoka)",
+                  ...(isActive ? { backgroundColor: "var(--tv-terracotta)" } : {}),
+                }}
               >
                 {tab.label}
               </Link>

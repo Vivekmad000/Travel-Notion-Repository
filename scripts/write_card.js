@@ -1,4 +1,6 @@
-'use client';
+const fs = require("fs");
+
+const card = `'use client';
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -35,9 +37,9 @@ export function TravelPlanCard({ travelPlan, onDelete }: TravelPlanCardProps) {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm(`Delete "${travelPlan.title}"? This cannot be undone.`)) return;
+    if (!confirm(\`Delete "\${travelPlan.title}"? This cannot be undone.\`)) return;
     try {
-      const res = await fetch(`/api/travel-plans/${travelPlan.id}`, { method: "DELETE" });
+      const res = await fetch(\`/api/travel-plans/\${travelPlan.id}\`, { method: "DELETE" });
       if (res.ok) onDelete();
     } catch {
       alert("Failed to delete travel plan");
@@ -46,7 +48,7 @@ export function TravelPlanCard({ travelPlan, onDelete }: TravelPlanCardProps) {
 
   return (
     <div
-      onClick={() => router.push(`/dashboard/travels/${travelPlan.id}`)}
+      onClick={() => router.push(\`/dashboard/travels/\${travelPlan.id}\`)}
       className="rounded-xl cursor-pointer transition-all group overflow-hidden"
       style={{ backgroundColor: "white", border: "2px solid transparent", boxShadow: "0 1px 4px rgba(15,45,63,0.08)" }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--tv-blue)")}
@@ -93,7 +95,7 @@ export function TravelPlanCard({ travelPlan, onDelete }: TravelPlanCardProps) {
             <span>📅</span>
             <span>
               {startFormatted && endFormatted
-                ? `${startFormatted} → ${endFormatted}`
+                ? \`\${startFormatted} → \${endFormatted}\`
                 : startFormatted || endFormatted}
             </span>
           </div>
@@ -117,7 +119,7 @@ export function TravelPlanCard({ travelPlan, onDelete }: TravelPlanCardProps) {
           <span className="text-xs" style={{ color: "var(--tv-blue)", opacity: 0.7 }}>
             {travelPlan._count.pages === 0
               ? "No pages yet"
-              : `${travelPlan._count.pages} page${travelPlan._count.pages === 1 ? "" : "s"}`}
+              : \`\${travelPlan._count.pages} page\${travelPlan._count.pages === 1 ? "" : "s"}\`}
           </span>
           <span className="text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--tv-terracotta)", fontFamily: "var(--font-fredoka)" }}>
             Open →
@@ -136,3 +138,7 @@ export function TravelPlanCard({ travelPlan, onDelete }: TravelPlanCardProps) {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("C:/Users/vivek/repos/travelnotion/app/dashboard/components/TravelPlanCard.tsx", card);
+console.log("TravelPlanCard done");

@@ -1,4 +1,6 @@
-"use client";
+const fs = require("fs");
+
+const shared = `"use client";
 
 import { useRouter } from "next/navigation";
 import { formatMonthYear } from "@/lib/dateFormat";
@@ -33,9 +35,9 @@ export function SharedPlanCard({ item, onRemove }: Props) {
 
   const handleRemove = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm(`Remove "${item.title}" from your shared plans?`)) return;
+    if (!confirm(\`Remove "\${item.title}" from your shared plans?\`)) return;
     try {
-      await fetch(`/api/share/access/${item.shareLinkId}`, { method: "DELETE" });
+      await fetch(\`/api/share/access/\${item.shareLinkId}\`, { method: "DELETE" });
       onRemove(item.shareLinkId);
     } catch {
       alert("Failed to remove");
@@ -44,7 +46,7 @@ export function SharedPlanCard({ item, onRemove }: Props) {
 
   return (
     <div
-      onClick={() => router.push(`/shared/${item.token}`)}
+      onClick={() => router.push(\`/shared/\${item.token}\`)}
       className="rounded-xl cursor-pointer transition-all group overflow-hidden relative"
       style={{ backgroundColor: "white", border: "2px solid transparent", boxShadow: "0 1px 4px rgba(15,45,63,0.08)" }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--tv-terracotta)")}
@@ -102,7 +104,7 @@ export function SharedPlanCard({ item, onRemove }: Props) {
 
         <div className="flex items-center justify-between mt-auto pt-2" style={{ borderTop: "1px solid var(--tv-cream)" }}>
           <span className="text-xs" style={{ color: "var(--tv-blue)", opacity: 0.7 }}>
-            {item._count.pages === 0 ? "No pages" : `${item._count.pages} page${item._count.pages === 1 ? "" : "s"}`}
+            {item._count.pages === 0 ? "No pages" : \`\${item._count.pages} page\${item._count.pages === 1 ? "" : "s"}\`}
           </span>
           <span className="text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--tv-terracotta)", fontFamily: "var(--font-fredoka)" }}>
             Open →
@@ -112,3 +114,7 @@ export function SharedPlanCard({ item, onRemove }: Props) {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("C:/Users/vivek/repos/travelnotion/app/dashboard/components/SharedPlanCard.tsx", shared);
+console.log("SharedPlanCard done");

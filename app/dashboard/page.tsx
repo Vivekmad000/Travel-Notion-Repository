@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TravelPlansClient } from "./TravelPlansClient";
+import Image from "next/image";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -71,9 +72,15 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: "var(--tv-cream)" }}>
       <AppHeader />
-      <main className="max-w-7xl mx-auto px-4 py-10">
+
+      {/* Background sketch decoration — bottom right, behind content */}
+      <div className="pointer-events-none select-none fixed bottom-0 right-0 z-0" style={{ opacity: 0.5 }}>
+        <Image src="/assets/beach_house.png" alt="" width={493} height={613} style={{ display: "block" }} />
+      </div>
+
+      <main className="relative z-10 max-w-7xl mx-auto px-4 py-10">
         <TravelPlansClient initialTravelPlans={serialized} sharedWithMe={sharedWithMe} />
       </main>
     </div>
