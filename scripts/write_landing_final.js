@@ -1,4 +1,6 @@
-import { SignUpButton, SignInButton } from "@clerk/nextjs";
+const fs = require("fs");
+
+const page = `import { SignUpButton, SignInButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { Header } from "./components/Header";
 
@@ -111,3 +113,6 @@ export default function Home() {
     </main>
   );
 }
+`;
+fs.writeFileSync("C:/Users/vivek/repos/travelnotion/app/page.tsx", page);
+console.log("page.tsx done");

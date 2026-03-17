@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AppHeader } from "@/app/components/AppHeader";
@@ -174,223 +175,168 @@ export function ProfileClient({ user, initialVisitedCities }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="min-h-screen" style={{ backgroundColor: "var(--tv-cream)" }}>
       <AppHeader />
 
-      <main className="max-w-4xl mx-auto px-4 py-10 space-y-8">
-        {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="flex items-start gap-6">
-            {/* Avatar */}
-            <div className="relative shrink-0">
-              <img
-                src={avatarSrc}
-                alt={displayName || "Profile"}
-                onClick={handleAvatarClick}
-                className={`w-24 h-24 rounded-full object-cover border-4 border-white shadow-md transition ${
-                  editing
-                    ? "cursor-pointer ring-2 ring-indigo-400 hover:opacity-80"
-                    : ""
-                }`}
-              />
-              {editing && (
-                <div
-                  onClick={handleAvatarClick}
-                  className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 cursor-pointer"
-                >
-                  <span className="text-white text-xs font-medium">
-                    {uploadingAvatar ? "Uploading…" : "Change"}
-                  </span>
-                </div>
-              )}
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
-            </div>
+      {/* Background sketch — bottom left, behind content */}
+      <div className="pointer-events-none select-none fixed bottom-0 left-0 z-0" style={{ opacity: 0.5, width: "25vw" }}>
+        <Image src="/assets/vacay_seats.png" alt="" width={832} height={760} style={{ width: "100%", height: "auto", display: "block" }} />
+      </div>
 
-            {/* Info / Edit form */}
-            <div className="flex-1 min-w-0">
-              {editing ? (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                      Name
-                    </label>
-                    <input
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Your name"
-                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                      Username
-                    </label>
-                    <div className={`mt-1 flex items-center rounded-lg border overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 ${
-                      usernameStatus === "taken" ? "border-red-400" :
-                      usernameStatus === "available" ? "border-green-400" :
-                      "border-gray-300"
-                    }`}>
-                      <span className="px-3 text-gray-400 text-sm bg-gray-50 border-r border-gray-300 py-2">
-                        @
-                      </span>
-                      <input
-                        value={editUsername}
-                        onChange={(e) => handleUsernameChange(e.target.value)}
-                        placeholder="username"
-                        className="flex-1 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
-                      />
-                      <span className="pr-3 text-sm">
-                        {usernameStatus === "checking" && (
-                          <span className="text-gray-400">…</span>
-                        )}
-                        {usernameStatus === "available" && (
-                          <span className="text-green-500">✓</span>
-                        )}
-                        {usernameStatus === "taken" && (
-                          <span className="text-red-500">✗</span>
-                        )}
-                      </span>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 py-10">
+        <div className="flex gap-6 items-start">
+
+          {/* ── Left column 35% ── */}
+          <div className="shrink-0 space-y-4" style={{ width: "35%" }}>
+
+            {/* Profile Card — orange */}
+            <div className="rounded-2xl p-6 overflow-hidden" style={{ backgroundColor: "var(--tv-terracotta)", boxShadow: "0 1px 6px rgba(229,101,45,0.2)" }}>
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div className="relative shrink-0">
+                  <img
+                    src={avatarSrc}
+                    alt={displayName || "Profile"}
+                    onClick={handleAvatarClick}
+                    className={`w-20 h-20 rounded-full object-cover shadow-md transition ${
+                      editing ? "cursor-pointer hover:opacity-80" : ""
+                    }`}
+                    style={{ border: `3px solid rgba(240,236,224,0.4)` }}
+                  />
+                  {editing && (
+                    <div onClick={handleAvatarClick} className="absolute inset-0 flex items-center justify-center rounded-full cursor-pointer" style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
+                      <span className="text-white text-xs font-medium">{uploadingAvatar ? "Uploading…" : "Change"}</span>
                     </div>
-                    {usernameStatus === "taken" && (
-                      <p className="text-xs text-red-500 mt-1">
-                        That username is already taken.
-                      </p>
-                    )}
-                    {usernameStatus === "available" && (
-                      <p className="text-xs text-green-600 mt-1">
-                        Username is available!
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                      Bio
-                    </label>
-                    <textarea
-                      value={editBio}
-                      onChange={(e) => setEditBio(e.target.value)}
-                      placeholder="Tell us about yourself…"
-                      rows={3}
-                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                    />
-                  </div>
-                  {saveError && (
-                    <p className="text-xs text-red-500">{saveError}</p>
                   )}
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={handleSave}
-                      disabled={saving || uploadingAvatar || usernameStatus === "taken" || usernameStatus === "checking"}
-                      className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                    >
-                      {saving ? "Saving…" : "Save"}
-                    </button>
-                    <button
-                      onClick={handleCancel}
-                      disabled={saving}
-                      className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold text-gray-900 truncate">
-                      {displayName || "No name set"}
-                    </h1>
-                    <button
-                      onClick={() => setEditing(true)}
-                      title="Edit profile"
-                      className="text-gray-400 hover:text-indigo-600 transition"
-                    >
-                      ✏️
-                    </button>
-                  </div>
-                  {displayUsername && (
-                    <p className="text-sm text-indigo-600 font-medium mt-0.5">
-                      @{displayUsername}
-                    </p>
-                  )}
-                  <p className="text-sm text-gray-500 mt-1">{user.email}</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Member since {memberSince}
-                  </p>
-                  {displayBio ? (
-                    <p className="text-sm text-gray-700 mt-3 leading-relaxed">
-                      {displayBio}
-                    </p>
+
+                {/* Info / Edit form */}
+                <div className="flex-1 min-w-0">
+                  {editing ? (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(240,236,224,0.8)", fontFamily: "var(--font-fredoka)" }}>Name</label>
+                        <input
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          placeholder="Your name"
+                          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                          style={{ border: "1px solid rgba(240,236,224,0.4)", color: "var(--tv-navy)", backgroundColor: "rgba(255,255,255,0.9)" }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(240,236,224,0.8)", fontFamily: "var(--font-fredoka)" }}>Username</label>
+                        <div className={`mt-1 flex items-center rounded-lg border overflow-hidden ${
+                          usernameStatus === "taken" ? "border-red-400" :
+                          usernameStatus === "available" ? "border-green-400" : ""
+                        }`} style={{ borderColor: usernameStatus === "idle" || usernameStatus === "checking" ? "rgba(240,236,224,0.4)" : undefined }}>
+                          <span className="px-3 text-sm py-2" style={{ color: "var(--tv-navy)", backgroundColor: "rgba(255,255,255,0.9)", borderRight: "1px solid rgba(240,236,224,0.4)" }}>@</span>
+                          <input
+                            value={editUsername}
+                            onChange={(e) => handleUsernameChange(e.target.value)}
+                            placeholder="username"
+                            className="flex-1 px-3 py-2 text-sm focus:outline-none"
+                            style={{ color: "var(--tv-navy)", backgroundColor: "rgba(255,255,255,0.9)" }}
+                          />
+                          <span className="pr-3 text-sm">
+                            {usernameStatus === "checking" && <span className="text-gray-400">…</span>}
+                            {usernameStatus === "available" && <span className="text-green-500">✓</span>}
+                            {usernameStatus === "taken" && <span className="text-red-500">✗</span>}
+                          </span>
+                        </div>
+                        {usernameStatus === "taken" && <p className="text-xs text-red-500 mt-1">That username is already taken.</p>}
+                        {usernameStatus === "available" && <p className="text-xs text-green-600 mt-1">Username is available!</p>}
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(240,236,224,0.8)", fontFamily: "var(--font-fredoka)" }}>Bio</label>
+                        <textarea
+                          value={editBio}
+                          onChange={(e) => setEditBio(e.target.value)}
+                          placeholder="Tell us about yourself…"
+                          rows={3}
+                          className="mt-1 block w-full rounded-lg px-3 py-2 text-sm focus:outline-none resize-none"
+                          style={{ border: "1px solid rgba(240,236,224,0.4)", color: "var(--tv-navy)", backgroundColor: "rgba(255,255,255,0.9)" }}
+                        />
+                      </div>
+                      {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+                      <div className="flex gap-2 pt-1">
+                        <button
+                          onClick={handleSave}
+                          disabled={saving || uploadingAvatar || usernameStatus === "taken" || usernameStatus === "checking"}
+                          className="px-4 py-2 text-sm font-semibold rounded-lg disabled:opacity-50 transition-opacity hover:opacity-90"
+                          style={{ backgroundColor: "var(--tv-navy)", color: "var(--tv-cream)", fontFamily: "var(--font-fredoka)" }}
+                        >
+                          {saving ? "Saving…" : "Save"}
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          disabled={saving}
+                          className="px-4 py-2 text-sm font-semibold rounded-lg disabled:opacity-50"
+                          style={{ backgroundColor: "rgba(240,236,224,0.2)", color: "var(--tv-cream)", fontFamily: "var(--font-fredoka)" }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
                   ) : (
-                    <p className="text-sm text-gray-400 mt-3 italic">
-                      No bio yet.{" "}
-                      <button
-                        onClick={() => setEditing(true)}
-                        className="text-indigo-500 hover:underline not-italic"
-                      >
-                        Add one
-                      </button>
-                    </p>
+                    <>
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-2xl font-bold truncate" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+                          {displayName || "No name set"}
+                        </h1>
+                        <button onClick={() => setEditing(true)} title="Edit profile" className="transition hover:opacity-70">
+                          <img src="/assets/pencil.png" alt="Edit" width={18} height={18} style={{ display: "inline", filter: "brightness(0) invert(1)" }} />
+                        </button>
+                      </div>
+                      {displayUsername && (
+                        <p className="text-sm font-bold mt-0.5" style={{ color: "var(--tv-blue)" }}>@{displayUsername}</p>
+                      )}
+                      <p className="text-sm mt-1 break-all" style={{ color: "rgba(240,236,224,0.85)", fontFamily: "var(--font-fredoka)" }}>{user.email}</p>
+                      <p className="text-xs mt-1" style={{ color: "rgba(240,236,224,0.7)" }}>Member since {memberSince}</p>
+                      {displayBio ? (
+                        <p className="text-sm mt-3 leading-relaxed break-words" style={{ color: "var(--tv-cream)" }}>{displayBio}</p>
+                      ) : (
+                        <p className="text-sm mt-3 italic" style={{ color: "rgba(240,236,224,0.6)" }}>
+                          No bio yet.{" "}
+                          <button onClick={() => setEditing(true)} className="hover:underline not-italic" style={{ color: "var(--tv-cream)" }}>Add one</button>
+                        </p>
+                      )}
+                    </>
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
+
+            {/* Stats — stacked */}
+            <StatCard icon="/assets/plane.png"  label="Trips"     value={tripCount === null ? "…" : tripCount} />
+            <StatCard icon="/assets/world.png"  label="Countries" value={uniqueCountries.length} />
+            <StatCard icon="/assets/city.png"   label="Cities"    value={visitedCities.length} />
           </div>
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4">
-          <StatCard
-            emoji="✈️"
-            label="Trips"
-            value={tripCount === null ? "…" : tripCount}
-          />
-          <StatCard
-            emoji="🌍"
-            label="Countries"
-            value={uniqueCountries.length}
-          />
-          <StatCard
-            emoji="🏙️"
-            label="Cities"
-            value={visitedCities.length}
-          />
-        </div>
+          {/* ── Right column 65% ── */}
+          <div className="flex-1 min-w-0">
+            <TravelMap
+              visitedCities={visitedCities}
+              onCityAdded={(city) => setVisitedCities((prev) => [...prev, city])}
+              onCityRemoved={(id) => setVisitedCities((prev) => prev.filter((c) => c.id !== id))}
+            />
+          </div>
 
-        {/* Interactive map — city management syncs stats */}
-        <TravelMap
-          visitedCities={visitedCities}
-          onCityAdded={(city) => setVisitedCities((prev) => [...prev, city])}
-          onCityRemoved={(id) =>
-            setVisitedCities((prev) => prev.filter((c) => c.id !== id))
-          }
-        />
+        </div>
       </main>
     </div>
   );
 }
 
-function StatCard({
-  emoji,
-  label,
-  value,
-}: {
-  emoji: string;
-  label: string;
-  value: string | number;
-}) {
+function StatCard({ icon, label, value }: { icon: string; label: string; value: string | number }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 text-center">
-      <div className="text-3xl mb-2">{emoji}</div>
-      <div className="text-3xl font-bold text-gray-900">{value}</div>
-      <div className="text-sm text-gray-500 mt-1">{label}</div>
+    <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: "var(--tv-navy)", boxShadow: "0 1px 6px rgba(53,82,172,0.2)" }}>
+      <img src={icon} alt={label} width={44} height={44} style={{ objectFit: "contain", flexShrink: 0 }} />
+      <div>
+        <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>{value}</div>
+        <div className="text-sm" style={{ color: "rgba(240,236,224,0.75)", fontFamily: "var(--font-fredoka)" }}>{label}</div>
+      </div>
     </div>
   );
 }

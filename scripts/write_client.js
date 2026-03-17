@@ -1,4 +1,6 @@
-'use client';
+const fs = require("fs");
+
+const content = `'use client';
 
 import { useState } from "react";
 import Link from "next/link";
@@ -135,7 +137,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
               {recentPlans.map((plan) => (
                 <li key={plan.id}>
                   <Link
-                    href={`/dashboard/travels/${plan.id}`}
+                    href={\`/dashboard/travels/\${plan.id}\`}
                     className="flex flex-col px-4 py-2.5 transition-colors group hover:bg-white/10"
                   >
                     <span className="text-sm font-medium truncate transition-colors" style={{ color: "var(--tv-cream)", fontFamily: "var(--font-fredoka)" }}>
@@ -161,7 +163,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
               {sharedPlans.map((item) => (
                 <li key={item.token}>
                   <Link
-                    href={`/shared/${item.token}`}
+                    href={\`/shared/\${item.token}\`}
                     className="flex flex-col px-4 py-2.5 transition-colors hover:bg-white/10"
                   >
                     <span className="text-sm font-medium truncate" style={{ color: "var(--tv-cream)", fontFamily: "var(--font-fredoka)" }}>
@@ -176,7 +178,6 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
             </ul>
           </div>
         )}
-
       </aside>
 
       {/* Main Content */}
@@ -219,7 +220,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
         {/* Empty state */}
         {travelPlans.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed p-16 text-center" style={{ borderColor: "var(--tv-peach)", backgroundColor: "rgba(246,241,230,0.5)" }}>
-            <img src="/assets/world.png" alt="" width={80} height={80} className="mx-auto mb-4" />
+            <div className="text-6xl mb-4">🌍</div>
             <h2 className="text-xl font-semibold mb-2" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-navy)" }}>No travel plans yet</h2>
             <p className="mb-6 text-sm" style={{ color: "var(--tv-blue)" }}>Create your first travel plan to get started!</p>
             <button
@@ -244,7 +245,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {group.plans.map((plan) => (
                     <TravelPlanCard
-                      key={`${group.label}-${plan.id}`}
+                      key={\`\${group.label}-\${plan.id}\`}
                       travelPlan={plan}
                       onDelete={() => handlePlanDeleted(plan.id)}
                     />
@@ -284,3 +285,7 @@ export function TravelPlansClient({ initialTravelPlans, sharedWithMe: initialSha
     </div>
   );
 }
+`;
+
+fs.writeFileSync("C:/Users/vivek/repos/travelnotion/app/dashboard/TravelPlansClient.tsx", content);
+console.log("TravelPlansClient done");

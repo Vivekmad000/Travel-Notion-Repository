@@ -2,42 +2,54 @@
 
 import { SignUpButton, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function Header() {
   const { user } = useUser();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
-    <header className="border-b border-gray-200 bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-indigo-600">
-          TravelNotion
+    <header className="sticky top-0 z-20 relative" style={{ backgroundColor: "var(--tv-navy)" }}>
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="text-2xl shrink-0" style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-cream)" }}>
+          Planora
         </Link>
-        <nav className="flex gap-4">
-          {user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="text-gray-700 hover:text-indigo-600 font-medium"
-              >
-                Dashboard
-              </Link>
-              <UserButton />
-            </>
-          ) : (
+
+        {/* Centered nav links */}
+        {mounted && user && (
+          <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+            <Link href="/dashboard" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Dashboard
+            </Link>
+            <Link href="/dashboard/profile" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Profile
+            </Link>
+            <Link href="/dashboard/favorites" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Favorites
+            </Link>
+          </nav>
+        )}
+
+        {/* Right side */}
+        <div className="flex items-center gap-3 shrink-0">
+          {mounted && user ? (
+            <UserButton />
+          ) : mounted ? (
             <>
               <SignInButton mode="modal">
-                <button className="text-gray-700 hover:text-indigo-600 font-medium">
+                <button className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
                   Sign In
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium">
-                  Sign Up
+                <button className="text-sm font-semibold px-5 py-2 rounded-full transition-opacity hover:opacity-90" style={{ fontFamily: "var(--font-fredoka)", backgroundColor: "var(--tv-terracotta)", color: "var(--tv-cream)" }}>
+                  Get Started
                 </button>
               </SignUpButton>
             </>
-          )}
-        </nav>
+          ) : null}
+        </div>
       </div>
     </header>
   );
