@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
+import { MyOutfitsTab } from "./MyOutfitsTab";
 
 const { uploadFiles } = generateReactHelpers<OurFileRouter>({
   url: "/api/uploadthing",
@@ -343,17 +344,7 @@ export function OutfitsClient() {
       )}
 
       {/* My Outfits tab — Phase 7C */}
-      {tab === "outfits" && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Image src="/assets/plane.png" alt="" width={70} height={70} style={{ opacity: 0.5 }} />
-          <h2 className="mt-6 text-2xl" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-navy)" }}>
-            Coming in Phase 7C!
-          </h2>
-          <p className="mt-2 text-sm max-w-xs" style={{ fontFamily: "var(--font-nunito)", color: "var(--tv-blue)" }}>
-            Build outfits from your closet and organize them into folders.
-          </p>
-        </div>
-      )}
+      {tab === "outfits" && <MyOutfitsTab closetItems={items} />}
     </>
   );
 }
