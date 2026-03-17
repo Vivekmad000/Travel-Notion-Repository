@@ -139,7 +139,6 @@ function FolderZone({
 
 function OutfitCard({ outfit, onEdit, onDelete }: { outfit: Outfit; onEdit: (o: Outfit) => void; onDelete: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: outfit.id });
-  const previews = outfit.items.slice(0, 4).map((i) => i.clothingItem.imageUrl);
 
   return (
     <div
@@ -152,20 +151,36 @@ function OutfitCard({ outfit, onEdit, onDelete }: { outfit: Outfit; onEdit: (o: 
     >
       <div className="h-1" style={{ backgroundColor: "var(--tv-terracotta)" }} />
       <div className="p-3">
-        {/* White collage preview — same height as closet card image area */}
+        {/* Mini collage — mirrors the real canvas at scale */}
         <div
-          className="rounded-xl w-full grid grid-cols-2 gap-1 p-2"
+          className="rounded-xl w-full relative overflow-hidden"
           style={{ backgroundColor: "white", height: 160 }}
         >
-          {previews.length > 0 ? previews.map((url, i) => (
-            <img key={i} src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 4 }} />
-          )) : (
-            <div className="col-span-2 flex items-center justify-center">
+          {outfit.items.length === 0 ? (
+            <div className="w-full h-full flex items-center justify-center">
               <span style={{ fontFamily: "var(--font-nunito)", color: "#ccc", fontSize: 11 }}>Empty</span>
             </div>
+          ) : (
+            outfit.items.map((item) => (
+              <img
+                key={item.id}
+                src={item.clothingItem.imageUrl}
+                alt=""
+                style={{
+                  position: "absolute",
+                  left: `${item.x}%`,
+                  top: `${item.y}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 52,
+                  height: 52,
+                  objectFit: "contain",
+                  zIndex: item.zIndex,
+                  pointerEvents: "none",
+                }}
+              />
+            ))
           )}
         </div>
-        {/* Spacer so absolute elements sit below the white box */}
         <div className="h-7" />
       </div>
       {/* Outfit name — bottom left pill */}
@@ -206,6 +221,14 @@ function OutfitEditorModal({
   const [nameVal, setNameVal] = useState(outfit.name);
   const canvasRef = useRef<HTMLDivElement>(null);
   const draggingItem = useRef<{ itemId: string; startX: number; startY: number; origX: number; origY: number } | null>(null);
+  // Always hold latest outfit for use inside window event listeners (avoids stale closure)
+  const outfitRef = useRef(outfit);
+  useEffect(() => { outfitRef.current = outfit; }, [outfit]);
+
+  // Propagate final state to parent when modal closes
+  useEffect(() => {
+    return () => { onUpdate(outfitRef.current); };
+  }, []);
 
   // Save name
   async function saveName() {
@@ -290,11 +313,17 @@ function OutfitEditorModal({
       const newX = Math.max(5, Math.min(95, draggingItem.current.origX + dx));
       const newY = Math.max(5, Math.min(95, draggingItem.current.origY + dy));
       const itemId = draggingItem.current.itemId;
-      fetch(`/api/outfits/${outfit.id}/items/${itemId}`, {
+      fetch(`/api/outfits/${outfitRef.current.id}/items/${itemId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ x: newX, y: newY }),
       });
+      // Build updated outfit and propagate to parent so position persists on reopen
+      const updatedOutfit = {
+        ...outfitRef.current,
+        items: outfitRef.current.items.map((i) => i.id === itemId ? { ...i, x: newX, y: newY } : i),
+      };
+      onUpdate(updatedOutfit);
       draggingItem.current = null;
     }
 
