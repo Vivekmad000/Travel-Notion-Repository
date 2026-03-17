@@ -1,13 +1,13 @@
-'use client';
+const fs = require("fs");
+
+// ── Header.tsx ──
+const header = `'use client';
 
 import { SignUpButton, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export function Header() {
   const { user } = useUser();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   return (
     <header className="sticky top-0 z-20" style={{ backgroundColor: "var(--tv-navy)" }}>
@@ -16,14 +16,14 @@ export function Header() {
           Planora
         </Link>
         <nav className="flex items-center gap-3">
-          {mounted && user ? (
+          {user ? (
             <>
               <Link href="/dashboard" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
                 Dashboard
               </Link>
               <UserButton />
             </>
-          ) : mounted ? (
+          ) : (
             <>
               <SignInButton mode="modal">
                 <button className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
@@ -36,9 +36,12 @@ export function Header() {
                 </button>
               </SignUpButton>
             </>
-          ) : null}
+          )}
         </nav>
       </div>
     </header>
   );
 }
+`;
+fs.writeFileSync("C:/Users/vivek/repos/travelnotion/app/components/Header.tsx", header);
+console.log("Header.tsx done");

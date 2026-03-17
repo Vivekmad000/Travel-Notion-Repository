@@ -7,6 +7,7 @@ import { AppUserButton } from "./AppUserButton";
 const NAV_TABS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Profile", href: "/dashboard/profile" },
+  { label: "Favorites", href: "/dashboard/favorites" },
 ];
 
 export function AppHeader() {
@@ -17,7 +18,7 @@ export function AppHeader() {
       <div className="px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link
-          href="/dashboard"
+          href="/"
           className="text-2xl shrink-0"
           style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-cream)" }}
         >
