@@ -202,13 +202,14 @@ function ClothingCard({ item, onDelete }: { item: ClothingItem; onDelete: (id: s
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
+    if (!confirm(`Delete "${item.name}" from your closet?`)) return;
     setDeleting(true);
     await fetch(`/api/clothing/${item.id}`, { method: "DELETE" });
     onDelete(item.id);
   }
 
   return (
-    <div className="group relative rounded-2xl overflow-hidden shadow-md" style={{ backgroundColor: "var(--tv-navy)" }}>
+    <div className="relative rounded-2xl overflow-hidden shadow-md" style={{ backgroundColor: "var(--tv-navy)" }}>
       <div className="h-1" style={{ backgroundColor: "var(--tv-terracotta)" }} />
       <div className="p-3 flex flex-col items-center">
         <div
@@ -217,25 +218,26 @@ function ClothingCard({ item, onDelete }: { item: ClothingItem; onDelete: (id: s
         >
           <img src={item.imageUrl} alt={item.name} style={{ maxHeight: 148, maxWidth: "100%", objectFit: "contain" }} />
         </div>
-        <p className="mt-2 text-sm text-center font-semibold truncate w-full" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+        <p className="mt-2 mb-8 text-sm text-center font-semibold truncate w-full" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
           {item.name}
         </p>
-        <span
-          className="mt-1 text-xs px-2 py-0.5 rounded-full"
-          style={{ fontFamily: "var(--font-nunito)", backgroundColor: "rgba(255,255,255,0.12)", color: "var(--tv-peach)", border: "1px solid var(--tv-blue)" }}
-        >
-          {CATEGORY_LABELS[item.category as Category] ?? item.category}
-        </span>
       </div>
-      {/* Delete button — shows on hover */}
+      {/* Delete button — bottom right, always visible */}
       <button
         onClick={handleDelete}
         disabled={deleting}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+        className="absolute bottom-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:opacity-80 transition-opacity disabled:opacity-40"
         style={{ backgroundColor: "var(--tv-terracotta)", color: "var(--tv-cream)" }}
       >
         ✕
       </button>
+      {/* Category tag — bottom left */}
+      <span
+        className="absolute bottom-2 left-2 text-xs px-2 py-0.5 rounded-full"
+        style={{ fontFamily: "var(--font-nunito)", backgroundColor: "rgba(255,255,255,0.12)", color: "var(--tv-peach)", border: "1px solid var(--tv-blue)" }}
+      >
+        {CATEGORY_LABELS[item.category as Category] ?? item.category}
+      </span>
     </div>
   );
 }

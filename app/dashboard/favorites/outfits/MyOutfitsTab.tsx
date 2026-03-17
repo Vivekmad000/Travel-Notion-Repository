@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState, useCallback } from "react";import Image from "next/image";
 import {
   DndContext,
   DragOverlay,
@@ -25,6 +24,8 @@ type Folder = { id: string; name: string };
 function FolderZone({
   folder,
   outfits,
+  isRenaming,
+  onRename,
   onEditOutfit,
   onDeleteOutfit,
   onDeleteFolder,
@@ -32,6 +33,8 @@ function FolderZone({
 }: {
   folder: Folder;
   outfits: Outfit[];
+  isRenaming: boolean;
+  onRename: (id: string, name: string) => void;
   onEditOutfit: (outfit: Outfit) => void;
   onDeleteOutfit: (id: string) => void;
   onDeleteFolder: (id: string) => void;
@@ -39,6 +42,29 @@ function FolderZone({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `folder-${folder.id}` });
   const [open, setOpen] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [renameVal, setRenameVal] = useState(folder.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Enter edit mode when first created (isRenaming prop)
+  useEffect(() => {
+    if (isRenaming) {
+      setRenameVal(folder.name);
+      setIsEditing(true);
+    }
+  }, [isRenaming]);
+
+  useEffect(() => {
+    if (isEditing) {
+      setTimeout(() => { inputRef.current?.focus(); inputRef.current?.select(); }, 50);
+    }
+  }, [isEditing]);
+
+  function commitRename() {
+    const name = renameVal.trim() || folder.name;
+    onRename(folder.id, name);
+    setIsEditing(false);
+  }
 
   return (
     <div
@@ -50,12 +76,28 @@ function FolderZone({
       }}
     >
       {/* Folder header */}
-      <div className="flex items-center justify-between px-4 py-3 cursor-pointer" onClick={() => setOpen((o) => !o)}>
+      <div className="flex items-center justify-between px-4 py-3 cursor-pointer" onClick={() => !isEditing && setOpen((o) => !o)}>
         <div className="flex items-center gap-2">
           <span style={{ color: "var(--tv-peach)", fontSize: 18 }}>{open ? "▾" : "▸"}</span>
-          <span style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)", fontSize: 18 }}>
-            {folder.name}
-          </span>
+          {isEditing ? (
+            <input
+              ref={inputRef}
+              value={renameVal}
+              onChange={(e) => setRenameVal(e.target.value)}
+              onBlur={commitRename}
+              onKeyDown={(e) => { if (e.key === "Enter") commitRename(); if (e.key === "Escape") { setRenameVal(folder.name); setIsEditing(false); } }}
+              onClick={(e) => e.stopPropagation()}
+              className="rounded px-2 py-0.5 text-base outline-none"
+              style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-navy)", backgroundColor: "var(--tv-cream)", minWidth: 120 }}
+            />
+          ) : (
+            <span
+              style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)", fontSize: 18, cursor: "text" }}
+              onDoubleClick={(e) => { e.stopPropagation(); setRenameVal(folder.name); setIsEditing(true); }}
+            >
+              {folder.name}
+            </span>
+          )}
           <span
             className="text-xs px-2 py-0.5 rounded-full"
             style={{ fontFamily: "var(--font-nunito)", backgroundColor: "var(--tv-terracotta)", color: "var(--tv-cream)" }}
@@ -104,42 +146,44 @@ function OutfitCard({ outfit, onEdit, onDelete }: { outfit: Outfit; onEdit: (o: 
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className="group relative rounded-xl overflow-hidden shadow cursor-grab active:cursor-grabbing"
-      style={{ backgroundColor: "rgba(255,255,255,0.07)", opacity: isDragging ? 0.4 : 1 }}
+      className="relative rounded-2xl overflow-hidden shadow-md cursor-grab active:cursor-grabbing"
+      style={{ backgroundColor: "var(--tv-navy)", opacity: isDragging ? 0.4 : 1 }}
+      onClick={() => onEdit(outfit)}
     >
       <div className="h-1" style={{ backgroundColor: "var(--tv-terracotta)" }} />
-      {/* Thumbnail collage */}
-      <div className="p-2 grid grid-cols-2 gap-1" style={{ minHeight: 80 }}>
-        {previews.length > 0 ? previews.map((url, i) => (
-          <img key={i} src={url} alt="" style={{ width: "100%", height: 36, objectFit: "contain", borderRadius: 4 }} />
-        )) : (
-          <div className="col-span-2 flex items-center justify-center" style={{ height: 60 }}>
-            <span style={{ fontFamily: "var(--font-nunito)", color: "var(--tv-peach)", fontSize: 11 }}>Empty</span>
-          </div>
-        )}
+      <div className="p-3">
+        {/* White collage preview — same height as closet card image area */}
+        <div
+          className="rounded-xl w-full grid grid-cols-2 gap-1 p-2"
+          style={{ backgroundColor: "white", height: 160 }}
+        >
+          {previews.length > 0 ? previews.map((url, i) => (
+            <img key={i} src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 4 }} />
+          )) : (
+            <div className="col-span-2 flex items-center justify-center">
+              <span style={{ fontFamily: "var(--font-nunito)", color: "#ccc", fontSize: 11 }}>Empty</span>
+            </div>
+          )}
+        </div>
+        {/* Spacer so absolute elements sit below the white box */}
+        <div className="h-7" />
       </div>
-      <p className="px-2 pb-2 text-xs font-semibold truncate" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+      {/* Outfit name — bottom left pill */}
+      <span
+        className="absolute bottom-2 left-2 text-xs px-2 py-0.5 rounded-full max-w-[65%] truncate"
+        style={{ fontFamily: "var(--font-nunito)", backgroundColor: "rgba(255,255,255,0.12)", color: "var(--tv-peach)", border: "1px solid var(--tv-blue)" }}
+      >
         {outfit.name}
-      </p>
-      {/* Actions */}
-      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => { e.stopPropagation(); onEdit(outfit); }}
-          className="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-          style={{ backgroundColor: "var(--tv-blue)", color: "var(--tv-cream)" }}
-        >
-          ✎
-        </button>
-        <button
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => { e.stopPropagation(); onDelete(outfit.id); }}
-          className="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-          style={{ backgroundColor: "var(--tv-terracotta)", color: "var(--tv-cream)" }}
-        >
-          ✕
-        </button>
-      </div>
+      </span>
+      {/* Delete — bottom right */}
+      <button
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => { e.stopPropagation(); if (confirm(`Delete "${outfit.name}"?`)) onDelete(outfit.id); }}
+        className="absolute bottom-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:opacity-80 transition-opacity"
+        style={{ backgroundColor: "var(--tv-terracotta)", color: "var(--tv-cream)" }}
+      >
+        ✕
+      </button>
     </div>
   );
 }
@@ -404,6 +448,7 @@ export function MyOutfitsTab({ closetItems }: { closetItems: ClothingItem[] }) {
   const [loading, setLoading] = useState(true);
   const [editingOutfit, setEditingOutfit] = useState<Outfit | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [renamingFolderId, setRenamingFolderId] = useState<string | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -414,11 +459,19 @@ export function MyOutfitsTab({ closetItems }: { closetItems: ClothingItem[] }) {
   }, []);
 
   async function createFolder() {
-    const name = prompt("Folder name:");
-    if (!name?.trim()) return;
-    const res = await fetch("/api/folders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim() }) });
+    const existingCount = folders.length + 1;
+    const name = `Folder ${existingCount}`;
+    const res = await fetch("/api/folders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
     const folder = await res.json();
     setFolders((prev) => [...prev, folder]);
+    setRenamingFolderId(folder.id);
+  }
+
+  async function renameFolder(id: string, name: string) {
+    if (!name.trim()) return;
+    await fetch(`/api/folders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim() }) });
+    setFolders((prev) => prev.map((f) => f.id === id ? { ...f, name: name.trim() } : f));
+    setRenamingFolderId(null);
   }
 
   async function deleteFolder(id: string) {
@@ -429,8 +482,7 @@ export function MyOutfitsTab({ closetItems }: { closetItems: ClothingItem[] }) {
   }
 
   async function createOutfit(folderId: string | null = null) {
-    const name = prompt("Outfit name:") ?? "New Outfit";
-    const res = await fetch("/api/outfits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, folderId }) });
+    const res = await fetch("/api/outfits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "New Outfit", folderId }) });
     const outfit = await res.json();
     setOutfits((prev) => [outfit, ...prev]);
     setEditingOutfit(outfit);
@@ -508,6 +560,8 @@ export function MyOutfitsTab({ closetItems }: { closetItems: ClothingItem[] }) {
           key={folder.id}
           folder={folder}
           outfits={outfits.filter((o) => o.folderId === folder.id)}
+          isRenaming={renamingFolderId === folder.id}
+          onRename={renameFolder}
           onEditOutfit={setEditingOutfit}
           onDeleteOutfit={deleteOutfit}
           onDeleteFolder={deleteFolder}
