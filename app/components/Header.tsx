@@ -10,19 +10,31 @@ export function Header() {
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="sticky top-0 z-20" style={{ backgroundColor: "var(--tv-navy)" }}>
-      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <header className="sticky top-0 z-20 relative" style={{ backgroundColor: "var(--tv-navy)" }}>
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="text-2xl shrink-0" style={{ fontFamily: "var(--font-ocean-trace)", color: "var(--tv-cream)" }}>
           Planora
         </Link>
-        <nav className="flex items-center gap-3">
+
+        {/* Centered nav links */}
+        {mounted && user && (
+          <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+            <Link href="/dashboard" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Dashboard
+            </Link>
+            <Link href="/dashboard/profile" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Profile
+            </Link>
+            <Link href="/dashboard/favorites" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
+              Favorites
+            </Link>
+          </nav>
+        )}
+
+        {/* Right side */}
+        <div className="flex items-center gap-3 shrink-0">
           {mounted && user ? (
-            <>
-              <Link href="/dashboard" className="text-sm font-semibold px-4 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{ fontFamily: "var(--font-fredoka)", color: "var(--tv-cream)" }}>
-                Dashboard
-              </Link>
-              <UserButton />
-            </>
+            <UserButton />
           ) : mounted ? (
             <>
               <SignInButton mode="modal">
@@ -37,7 +49,7 @@ export function Header() {
               </SignUpButton>
             </>
           ) : null}
-        </nav>
+        </div>
       </div>
     </header>
   );
