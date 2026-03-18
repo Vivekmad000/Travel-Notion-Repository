@@ -1,10 +1,11 @@
-﻿import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { colorForUser } from "@/lib/userColor";
 import { Breadcrumb } from "@/app/components/Breadcrumb";
 import { PageEditorLoader as PageEditor } from "./PageEditorLoader";
+import { OutfitPlannerPage } from "./OutfitPlannerPage";
 
 export default async function PageDetailPage({
   params,
@@ -36,6 +37,27 @@ export default async function PageDetailPage({
 
   const userName = user.name || user.username || "Anonymous";
   const userColor = colorForUser(userId);
+
+  // Render custom template pages instead of the BlockNote editor
+  if (page.templateSlug === "outfit-planner") {
+    return (
+      <div>
+        <div className="px-8 pt-8">
+          <Breadcrumb items={breadcrumbItems} />
+        </div>
+        <OutfitPlannerPage
+          page={{ id: page.id, title: page.title, travelPlanId: page.travelPlanId }}
+          travelPlan={{
+            id: page.travelPlan.id,
+            title: page.travelPlan.title,
+            startDate: page.travelPlan.startDate?.toISOString() ?? null,
+            endDate: page.travelPlan.endDate?.toISOString() ?? null,
+          }}
+          userName={userName}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-8 py-10">

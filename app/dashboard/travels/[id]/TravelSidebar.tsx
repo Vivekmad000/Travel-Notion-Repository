@@ -118,6 +118,7 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [defaultTitle, setDefaultTitle] = useState("");
+  const [defaultTemplateSlug, setDefaultTemplateSlug] = useState<string | undefined>(undefined);
   const [selectedParent, setSelectedParent] = useState<{ id: string | null; depth: number; title?: string }>({
     id: null,
     depth: -1,
@@ -146,12 +147,14 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
   const handleSelectBlank = () => {
     setTemplatePickerOpen(false);
     setDefaultTitle("");
+    setDefaultTemplateSlug(undefined);
     setModalOpen(true);
   };
 
   const handleSelectTemplate = (template: Template) => {
     setTemplatePickerOpen(false);
     setDefaultTitle(template.defaultTitle);
+    setDefaultTemplateSlug(template.slug);
     setModalOpen(true);
   };
 
@@ -261,6 +264,7 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
         parentDepth={selectedParent.depth}
         parentTitle={selectedParent.title}
         defaultTitle={defaultTitle}
+        templateSlug={defaultTemplateSlug}
         onSuccess={handlePageCreated}
       />
 

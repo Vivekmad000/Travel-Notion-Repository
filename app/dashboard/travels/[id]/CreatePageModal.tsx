@@ -10,11 +10,12 @@ type CreatePageModalProps = {
   parentDepth: number;
   parentTitle?: string;
   defaultTitle?: string;
+  templateSlug?: string;
   onSuccess: (page: any) => void;
 };
 
 export function CreatePageModal({
-  isOpen, onClose, travelPlanId, parentPageId, parentDepth, parentTitle, defaultTitle = "", onSuccess,
+  isOpen, onClose, travelPlanId, parentPageId, parentDepth, parentTitle, defaultTitle = "", templateSlug, onSuccess,
 }: CreatePageModalProps) {
   const [title, setTitle] = useState(defaultTitle);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +33,7 @@ export function CreatePageModal({
       const res = await fetch(`/api/travel-plans/${travelPlanId}/pages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, parentPageId }),
+        body: JSON.stringify({ title, parentPageId, templateSlug }),
       });
       const json = await res.json();
       if (!res.ok) { setError(json.error || "Failed to create page"); return; }

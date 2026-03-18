@@ -75,7 +75,7 @@ export async function POST(
     if (!travelPlan) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const body = await req.json();
-    const { title, parentPageId } = body;
+    const { title, parentPageId, templateSlug } = body;
 
     if (!title || typeof title !== "string" || !title.trim()) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -99,6 +99,7 @@ export async function POST(
         depth,
         travelPlanId: id,
         parentPageId: parentPageId || null,
+        templateSlug: templateSlug || null,
       },
     });
 

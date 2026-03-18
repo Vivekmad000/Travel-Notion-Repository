@@ -91,12 +91,13 @@ model SharedAccess {
 }
 
 model Page {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?  @db.NVarChar(Max)
-  depth     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  content      String?  @db.NVarChar(Max)
+  depth        Int      @default(0)
+  templateSlug String?  // e.g. "outfit-planner" — renders custom UI instead of BlockNote
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   travelPlanId String
   travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
@@ -104,6 +105,9 @@ model Page {
   parentPageId String?
   parentPage   Page?   @relation("PageChildren", fields: [parentPageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children     Page[]  @relation("PageChildren")
+
+  plannerOutfits  PlannerOutfit[]
+  calendarEntries CalendarEntry[]
 
   @@index([travelPlanId])
   @@index([parentPageId])
@@ -137,9 +141,10 @@ model OutfitFolder {
 }
 
 model Outfit {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  plannerOnly Boolean  @default(false) // true = trip-specific, hidden from main wardrobe
+  createdAt   DateTime @default(now())
 
   userId   String
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -147,7 +152,8 @@ model Outfit {
   folderId String?
   folder   OutfitFolder? @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  items OutfitItem[]
+  items          OutfitItem[]
+  plannerOutfits PlannerOutfit[]
 
   @@index([userId])
   @@index([folderId])
@@ -167,5 +173,38 @@ model OutfitItem {
   clothingItem   ClothingItem @relation(fields: [clothingItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([outfitId])
+}
+
+model PlannerOutfit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  pageId String
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  outfitId String
+  outfit   Outfit @relation(fields: [outfitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  calendarEntries CalendarEntry[]
+
+  @@unique([pageId, outfitId])
+  @@index([pageId])
+  @@index([outfitId])
+}
+
+model CalendarEntry {
+  id    String @id @default(cuid())
+  date  String // "YYYY-MM-DD"
+  order Int    @default(0)
+  createdAt DateTime @default(now())
+
+  pageId String
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  plannerOutfitId String
+  plannerOutfit   PlannerOutfit @relation(fields: [plannerOutfitId], references: [id], onDelete: Cascade)
+
+  @@index([pageId])
+  @@index([plannerOutfitId])
 }
 
