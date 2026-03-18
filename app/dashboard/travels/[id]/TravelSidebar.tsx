@@ -151,15 +151,32 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
     setModalOpen(true);
   };
 
-  const handleSelectTemplate = (template: Template) => {
+  const handleSelectTemplate = async (template: Template) => {
     setTemplatePickerOpen(false);
-    setDefaultTitle(template.defaultTitle);
-    setDefaultTemplateSlug(template.slug);
-    setModalOpen(true);
+    // Create the page directly — no title modal for templates
+    try {
+      const res = await fetch(`/api/travel-plans/${travelPlanId}/pages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: template.defaultTitle,
+          templateSlug: template.slug,
+          parentPageId: selectedParent.id,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.data) {
+        setPages((prev) => [...prev, json.data]);
+        router.push(`/dashboard/travels/${travelPlanId}/pages/${json.data.id}`);
+      }
+    } catch {
+      // fall back silently
+    }
   };
 
   const handlePageCreated = (page: Page) => {
     setPages((prev) => [...prev, page]);
+    router.push(`/dashboard/travels/${travelPlanId}/pages/${page.id}`);
   };
 
   const handleDeletePage = async (pageId: string) => {
