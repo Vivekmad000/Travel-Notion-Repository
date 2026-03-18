@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { CreatePageModal } from "./CreatePageModal";
+import { TemplatePickerModal, type Template } from "./TemplatePickerModal";
 import { ShareModal } from "@/app/components/ShareModal";
 
 type Page = {
@@ -114,7 +115,9 @@ function PageItem({
 export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }: TravelSidebarProps) {
   const [pages, setPages] = useState<Page[]>(initialPages);
   const [travelPlan] = useState(initialTravelPlan);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [defaultTitle, setDefaultTitle] = useState("");
   const [selectedParent, setSelectedParent] = useState<{ id: string | null; depth: number; title?: string }>({
     id: null,
     depth: -1,
@@ -130,11 +133,25 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
 
   const handleAddRootPage = () => {
     setSelectedParent({ id: null, depth: -1 });
-    setModalOpen(true);
+    setDefaultTitle("");
+    setTemplatePickerOpen(true);
   };
 
   const handleAddChild = (page: PageNode) => {
     setSelectedParent({ id: page.id, depth: page.depth, title: page.title });
+    setDefaultTitle("");
+    setTemplatePickerOpen(true);
+  };
+
+  const handleSelectBlank = () => {
+    setTemplatePickerOpen(false);
+    setDefaultTitle("");
+    setModalOpen(true);
+  };
+
+  const handleSelectTemplate = (template: Template) => {
+    setTemplatePickerOpen(false);
+    setDefaultTitle(template.defaultTitle);
     setModalOpen(true);
   };
 
@@ -228,6 +245,14 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
         </div>
       </aside>
 
+      <TemplatePickerModal
+        isOpen={templatePickerOpen}
+        onClose={() => setTemplatePickerOpen(false)}
+        onSelectBlank={handleSelectBlank}
+        onSelectTemplate={handleSelectTemplate}
+        parentTitle={selectedParent.title}
+      />
+
       <CreatePageModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -235,6 +260,7 @@ export function TravelSidebar({ travelPlanId, initialTravelPlan, initialPages }:
         parentPageId={selectedParent.id}
         parentDepth={selectedParent.depth}
         parentTitle={selectedParent.title}
+        defaultTitle={defaultTitle}
         onSuccess={handlePageCreated}
       />
 

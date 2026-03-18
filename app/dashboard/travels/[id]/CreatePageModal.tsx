@@ -10,6 +10,7 @@ type CreatePageModalProps = {
   parentPageId: string | null;
   parentDepth: number;
   parentTitle?: string;
+  defaultTitle?: string;
   onSuccess: (page: any) => void;
 };
 
@@ -20,16 +21,20 @@ export function CreatePageModal({
   parentPageId,
   parentDepth,
   parentTitle,
+  defaultTitle = "",
   onSuccess,
 }: CreatePageModalProps) {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(defaultTitle);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Sync title when defaultTitle changes (e.g. switching from blank to template)
+  useState(() => { setTitle(defaultTitle); });
 
   const isDepthError = parentDepth >= 4;
 
   const handleClose = () => {
-    setTitle("");
+    setTitle(defaultTitle);
     setError("");
     onClose();
   };
