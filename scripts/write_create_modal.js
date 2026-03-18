@@ -1,4 +1,5 @@
-'use client';
+const fs = require('fs');
+const content = `'use client';
 
 import { useState } from "react";
 
@@ -29,7 +30,7 @@ export function CreatePageModal({
     if (isDepthError) { setError("Maximum depth reached"); return; }
     setIsLoading(true); setError("");
     try {
-      const res = await fetch(`/api/travel-plans/${travelPlanId}/pages`, {
+      const res = await fetch(\`/api/travel-plans/\${travelPlanId}/pages\`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, parentPageId }),
@@ -103,3 +104,6 @@ export function CreatePageModal({
     </div>
   );
 }
+`;
+fs.writeFileSync(__dirname + '/../app/dashboard/travels/[id]/CreatePageModal.tsx', content);
+console.log('done');
