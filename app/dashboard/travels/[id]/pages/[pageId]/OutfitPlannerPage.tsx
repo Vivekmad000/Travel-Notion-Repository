@@ -2,6 +2,7 @@
 
 import { PlannerOutfitsSection } from "./PlannerOutfitsSection";
 import { ClosetCarousel } from "./ClosetCarousel";
+import { TripCalendar } from "./TripCalendar";
 
 type TravelPlan = {
   id: string;
@@ -84,12 +85,14 @@ export function OutfitPlannerPage({ page, travelPlan, userName }: OutfitPlannerP
             subtitle="Drag outfits to your trip days"
           />
           <div
-            className="rounded-2xl p-6 flex items-center justify-center"
-            style={{ backgroundColor: "white", border: "1.5px dashed var(--tv-peach)", minHeight: 160 }}
+            className="rounded-2xl p-6"
+            style={{ backgroundColor: "white", border: "1px solid var(--tv-peach)" }}
           >
-            <p style={{ fontFamily: "var(--font-nunito)", color: "var(--tv-blue)", opacity: 0.6 }}>
-              Calendar coming soon…
-            </p>
+            <TripCalendar
+              pageId={page.id}
+              startDate={travelPlan.startDate}
+              endDate={travelPlan.endDate}
+            />
           </div>
         </section>
       </div>
