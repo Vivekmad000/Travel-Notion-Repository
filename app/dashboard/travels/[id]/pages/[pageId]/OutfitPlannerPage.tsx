@@ -1,6 +1,7 @@
 'use client';
 
 import { PlannerOutfitsSection } from "./PlannerOutfitsSection";
+import { ClosetCarousel } from "./ClosetCarousel";
 
 type TravelPlan = {
   id: string;
@@ -68,13 +69,10 @@ export function OutfitPlannerPage({ page, travelPlan, userName }: OutfitPlannerP
             title="Closet Carousel"
             subtitle="Swipe through your trip outfits"
           />
-          <div
-            className="rounded-2xl p-6 flex items-center justify-center"
-            style={{ backgroundColor: "white", border: "1.5px dashed var(--tv-peach)", minHeight: 160 }}
-          >
-            <p style={{ fontFamily: "var(--font-nunito)", color: "var(--tv-blue)", opacity: 0.6 }}>
-              Swipe carousel coming soon…
-            </p>
+          <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "white", border: "1px solid var(--tv-peach)" }}>
+            <div className="p-6">
+              <ClosetCarousel pageId={page.id} />
+            </div>
           </div>
         </section>
 
