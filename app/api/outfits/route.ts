@@ -14,7 +14,7 @@ export async function GET() {
       orderBy: { createdAt: "asc" },
     }),
     prisma.outfit.findMany({
-      where: { userId: user.id },
+      where: { userId: user.id, plannerOnly: false },
       orderBy: { createdAt: "desc" },
       include: {
         items: {
@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
   const user = await prisma.user.findUnique({ where: { clerkId } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  const { name, folderId } = await req.json();
+  const { name, folderId, plannerOnly } = await req.json();
   if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
   const outfit = await prisma.outfit.create({
-    data: { name, folderId: folderId ?? null, userId: user.id },
+    data: { name, folderId: folderId ?? null, userId: user.id, plannerOnly: plannerOnly ?? false },
     include: { items: { include: { clothingItem: { select: { imageUrl: true } } } } },
   });
 
